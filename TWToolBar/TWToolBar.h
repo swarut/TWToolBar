@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, TWToolBarPosition) {
 @property (assign, nonatomic) TWToolBarPosition position;
 
 @property (strong, nonatomic) NSMutableArray* buttons;
+@property (strong, nonatomic) NSArray* views;
 @property (strong, nonatomic) NSArray* titles;
 @property (strong, nonatomic) NSArray* imageNames;
 @property (strong, nonatomic) NSArray* highLightedImageNames;
@@ -37,6 +38,8 @@ typedef NS_ENUM(NSUInteger, TWToolBarPosition) {
 
 @property (strong, nonatomic) UIColor* fontColor;
 @property (strong, nonatomic) UIColor* highlightColor;
+
+@property (weak, nonatomic) UIView* parentView;
 
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles;
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles
@@ -48,8 +51,18 @@ typedef NS_ENUM(NSUInteger, TWToolBarPosition) {
   withImageNames:(NSArray*)imageNames
   withHighlightedImageNames:(NSArray*)highlightedImageNames
   withStyle:(TWToolBarButtonStyle)style;
++ (TWToolBar*)toolBarWithViews:(NSArray *)views withFrame:(CGRect)frame;
++ (TWToolBar*)toolBarWithViews:(NSArray *)views
+  withFrame:(CGRect)frame
+  withLeadingSpace:(CGFloat)leadingSpace
+  withSpaceBetweenItem:(CGFloat)spaceBetweenItem;
 
 - (void)addActionBlockForButtonAtIndex:(NSInteger)index;
 - (void)setUp;
-- (void)attachToView:(UIView*)view atPosition:(TWToolBarPosition)position;
+- (void)attachToView:(UIView*)view
+  atPosition:(TWToolBarPosition)position
+  completion:(void (^)(BOOL finished))completionBlock;
+- (void)detachWithCompletion:(void (^)(BOOL finished))completionBlock;
+- (CGFloat)buttonWidth;
+
 @end

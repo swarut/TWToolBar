@@ -10,6 +10,7 @@
 
 const CGFloat kDefaultHeight = 44;
 const CGFloat kDefaultWidth = 320;
+const CGFloat kAnimationDuration = 0.5;
 
 @interface TWToolBar()
 
@@ -56,6 +57,34 @@ const CGFloat kDefaultWidth = 320;
   [toolBar setUp];
   
   return toolBar;
+}
+
++ (TWToolBar*)toolBarWithViews:(NSArray *)views withFrame:(CGRect)frame {
+  return [self toolBarWithViews:views withFrame:frame withLeadingSpace:0 withSpaceBetweenItem:0];
+}
+
++ (TWToolBar*)toolBarWithViews:(NSArray *)views
+  withFrame:(CGRect)frame
+  withLeadingSpace:(CGFloat)leadingSpace
+  withSpaceBetweenItem:(CGFloat)spaceBetweenItem {
+  
+  TWToolBar* toolBar = [[TWToolBar alloc] initWithFrame:frame];
+  toolBar.views            = views;
+  toolBar.leadingSpace     = leadingSpace;
+  toolBar.trailingSpace    = leadingSpace;
+  toolBar.spaceBetweenItem = spaceBetweenItem;
+  
+  [views enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+    UIView* view = [views objectAtIndex:index];
+    view.frame = CGRectMake(
+      toolBar.leadingSpace + index * (toolBar.buttonWidth + toolBar.spaceBetweenItem),
+      0,
+      toolBar.buttonWidth,
+      toolBar.frame.size.height);
+    [toolBar addSubview:view];
+  }];
+  return toolBar;
+  
 }
 
 - (void)setUp {
@@ -130,7 +159,6 @@ const CGFloat kDefaultWidth = 320;
     
     case TWToolBarFullButtonStyle:
     {
-      button.backgroundColor = [UIColor greenColor];
       [button setTitle:title forState:UIControlStateNormal];
       [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
       [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
@@ -160,11 +188,82 @@ const CGFloat kDefaultWidth = 320;
   
 }
 
-- (void)attachToView:(UIView*)view atPosition:(TWToolBarPosition)position {
+- (void)attachToView:(UIView*)view
+  atPosition:(TWToolBarPosition)position
+  completion:(void (^)(BOOL finished))completionBlock {
   
+  self.parentView = view;
+  self.position = position;
+  
+  // Ensure that toolbar isn't a subview of current view.
+  [self removeFromSuperview];
+  
+  switch (position) {
+    case TWToolBarPositionTop:
+      
+      break;
+    
+    case TWToolBarPositionRight:
+      break;
+      
+    case TWToolBarPositionBottom:
+    {
+      self.frame = CGRectMake(
+        0,
+        view.frame.size.height,
+        self.frame.size.width,
+        self.frame.size.height);
+      
+      [view addSubview:self];
+      [UIView animateWithDuration:kAnimationDuration delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.frame = CGRectMake(
+          0,
+          view.frame.size.height - self.frame.size.height,
+          self.frame.size.width,
+          self.frame.size.height);
+      } completion:completionBlock];
+      
+    }
+      break;
+      
+    case TWToolBarPositionLeft:
+      break;
+  }
 }
 
+- (void)detachWithCompletion:(void (^)(BOOL finished))completionBlock {
+  
+  switch (self.position) {
+    case TWToolBarPositionTop:
+      break;
+    case TWToolBarPositionRight:
+      break;
+    case TWToolBarPositionBottom:
+    {
+      self.frame = CGRectMake(
+        0,
+        self.parentView.frame.size.height - self.frame.size.height,
+        self.frame.size.width,
+        self.frame.size.height);
+      
+      [self.parentView addSubview:self];
+      [UIView animateWithDuration:kAnimationDuration delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.frame = CGRectMake(
+          0,
+          self.parentView.frame.size.height,
+          self.frame.size.width,
+          self.frame.size.height);
+      } completion:completionBlock];
+      
+    }
 
+      break;
+    case TWToolBarPositionLeft:
+      break;
+    default:
+      break;
+  }
+}
 
 - (NSArray*)buttons {
   if (!_buttons) {
@@ -188,6 +287,9 @@ const CGFloat kDefaultWidth = 320;
   // Assuming that number of title reflect total item.
   if (self.titles) {
     _count = [self.titles count];
+  }
+  if (self.views) {
+    _count = [self.views count];
   }
   return _count;
 }

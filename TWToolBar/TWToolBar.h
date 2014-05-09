@@ -11,15 +11,15 @@
 @interface TWToolBar : UIView
 
 typedef NS_ENUM(NSUInteger, TWToolBarButtonStyle ) {
-  TWToolBarPlainButtonStyle = 1,
-  TWToolBarFullButtonStyle = 2
+    TWToolBarPlainButtonStyle = 1,
+    TWToolBarFullButtonStyle = 2
 };
 
 typedef NS_ENUM(NSUInteger, TWToolBarPosition) {
-  TWToolBarPositionTop = 0,
-  TWToolBarPositionRight = 1,
-  TWToolBarPositionBottom = 2,
-  TWToolBarPositionLeft = 3
+    TWToolBarPositionTop = 0,
+    TWToolBarPositionRight = 1,
+    TWToolBarPositionBottom = 2,
+    TWToolBarPositionLeft = 3
 };
 
 @property (assign, nonatomic) CGFloat leadingSpace;
@@ -41,28 +41,35 @@ typedef NS_ENUM(NSUInteger, TWToolBarPosition) {
 
 @property (weak, nonatomic) UIView* parentView;
 
+// Convenience method
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles;
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles
-  withStyle:(TWToolBarButtonStyle)style;
+                      withStyle:(TWToolBarButtonStyle)style;
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles
-  withImageNames:(NSArray*)imageNames
-  withHighlightedImageNames:(NSArray*)highlightedImageNames;
+                 withImageNames:(NSArray*)imageNames
+      withHighlightedImageNames:(NSArray*)highlightedImageNames;
 + (TWToolBar*)toolBarWithTitles:(NSArray*)titles
-  withImageNames:(NSArray*)imageNames
-  withHighlightedImageNames:(NSArray*)highlightedImageNames
-  withStyle:(TWToolBarButtonStyle)style;
+                 withImageNames:(NSArray*)imageNames
+      withHighlightedImageNames:(NSArray*)highlightedImageNames
+                      withStyle:(TWToolBarButtonStyle)style;
 + (TWToolBar*)toolBarWithViews:(NSArray *)views withFrame:(CGRect)frame;
 + (TWToolBar*)toolBarWithViews:(NSArray *)views
-  withFrame:(CGRect)frame
-  withLeadingSpace:(CGFloat)leadingSpace
-  withSpaceBetweenItem:(CGFloat)spaceBetweenItem;
+                     withFrame:(CGRect)frame
+              withLeadingSpace:(CGFloat)leadingSpace
+          withSpaceBetweenItem:(CGFloat)spaceBetweenItem;
 
 - (void)addActionBlockForButtonAtIndex:(NSInteger)index;
 - (void)setUp;
 - (void)attachToView:(UIView*)view
-  atPosition:(TWToolBarPosition)position
-  completion:(void (^)(BOOL finished))completionBlock;
+          atPosition:(TWToolBarPosition)position
+          completion:(void (^)(BOOL finished))completionBlock;
 - (void)detachWithCompletion:(void (^)(BOOL finished))completionBlock;
 - (CGFloat)buttonWidth;
+
+- (instancetype)initWithFrame:(CGRect)frame andViews:(NSArray *)views;
+// Designed initailizer
+- (instancetype)initWithFrame:(CGRect)frame andViews:(NSArray *)views
+              andLeadingSpace:(CGFloat)leadingSpace
+          andSpaceBetweenItem:(CGFloat)spaceBetweenItem;
 
 @end
